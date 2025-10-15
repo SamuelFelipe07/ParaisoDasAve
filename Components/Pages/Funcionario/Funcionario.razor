@@ -1,0 +1,66 @@
+@page "/funcionarios"
+
+@using AppExemplo.Models
+@inject FuncionarioDAO funcionarioDao
+@inject NavigationManager Navigation
+
+<PageTitle>Funcionários</PageTitle>
+<header class="topbar" style="display: flex; justify-content: space-between; align-items: center; background-color: #004b93; color: white; padding: 10px 20px;">
+    <div class="logo" style="display: flex; align-items: center; gap: 10px;">
+        <img src="https://img.icons8.com/color/48/000000/bird--v1.png" alt="Logo" />
+        <span style="font-weight: bold; font-size: 1.2rem;">GESTÃO DE FUNCIONÁRIO</span>
+    </div>
+
+    <button @onclick="VoltarInicio"
+            style="font-size: 24px; background: none; border: none; color: white; cursor: pointer;"
+            title="Voltar para início">🏠</button>
+</header>
+<a href="/funcionarios/novo" class="btn btn-sm btn-primary">Novo Funcionario</a>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Nome</th>
+            <th>CPF</th>
+            <th>Telefone</th>
+            <th>Email</th>
+            <th>Sexo</th>
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            int contador = 1;
+            @foreach (var funcionario in listaFuncionario)
+            {
+                <tr>
+                    <td>@contador</td>
+                    <td>@funcionario.Nome</td>
+                    <td>@funcionario.Cpf</td>
+                    <td>@funcionario.Telefone</td>
+                    <td>@funcionario.Email</td>
+                    <td>@funcionario.Sexo</td>
+                </tr>
+                contador++;
+            }
+        }
+    </tbody>
+</table>
+
+@code {
+    private List<Models.Funcionario> listaFuncionario = new();
+
+    protected override void OnInitialized()
+    {
+        CarregarFuncionarios();
+    }
+
+    private void CarregarFuncionarios()
+    {
+        listaFuncionario = funcionarioDao.ListarTodos();
+    }
+    private void VoltarInicio()
+    {
+        Navigation.NavigateTo("/");
+    }
+}

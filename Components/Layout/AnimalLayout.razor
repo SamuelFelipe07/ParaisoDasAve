@@ -1,0 +1,84 @@
+﻿<h3>AnimalLayout</h3>
+
+@code {
+
+}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cadastro de Pet</title>
+  
+</head>
+
+<body>
+
+  <!-- CONTEÚDO PRINCIPAL -->
+  <div class="content">
+
+    <header class="topbar">
+      <div class="logo">
+        <img src="https://img.icons8.com/color/48/000000/bird--v1.png" alt="Logo" />
+        GESTÃO DE ANIMAIS
+      </div>
+      <div class="home-icon" title="Home"><button><a href="./menu.html">🏠</a></button></div>
+    </header> 
+
+      <form>
+        <label for="cliente">Selecionar Cliente:</label>
+        <select id="cliente" name="cliente">
+          <option value="">Selecione um cliente</option>
+          <option value="1">João Silva</option>
+          <option value="2">Maria Souza</option>
+        </select>
+
+        <div class="form-row">
+          <div>
+            <label for="nome">Nome:</label>
+            <input type="text" id="nome" name="nome">
+          </div>
+          <div>
+            <label for="raca">Raça:</label>
+            <input type="text" id="raca" name="raca">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div>
+            <label for="especie">Espécie:</label>
+            <input type="text" id="especie" name="especie">
+          </div>
+          <div>
+            <label for="porte">Porte:</label>
+            <input type="text" id="porte" name="porte">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div>
+            <label for="sexo">Sexo:</label>
+            <select id="sexo" name="sexo">
+              <option value="M">Macho</option>
+              <option value="F">Fêmea</option>
+            </select>
+          </div>
+          <div>
+            <label for="peso">Peso:</label>
+            <input type="text" id="peso" name="peso">
+          </div>
+        </div>
+
+        <label for="diagnostico">Diagnóstico:</label>
+        <input type="text" id="diagnostico" name="diagnostico">
+
+        <div class="buttons">
+          <button type="reset" class="btn btn-descartar">DESCARTAR</button>
+          <button type="submit" class="btn btn-cadastrar">CADASTRAR</button>
+        </div>
+      </form>
+    </div>
+
+
+</body>
+</html>

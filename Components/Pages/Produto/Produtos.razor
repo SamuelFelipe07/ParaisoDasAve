@@ -1,0 +1,74 @@
+﻿@page "/produtos"
+
+@using AppExemplo.Models;
+@inject ProdutoDAO produtoDAO
+@inject NavigationManager Navigation
+
+
+<PageTitle>Produtos</PageTitle>
+
+<header class="topbar" style="display: flex; justify-content: space-between; align-items: center; background-color: #004b93; color: white; padding: 10px 20px;">
+    <div class="logo" style="display: flex; align-items: center; gap: 10px;">
+        <img src="https://img.icons8.com/color/48/000000/bird--v1.png" alt="Logo" />
+        <span style="font-weight: bold; font-size: 1.2rem;">GESTÃO DE PRODUTOS</span>
+    </div>
+
+    <button @onclick="VoltarInicio"
+            style="font-size: 24px; background: none; border: none; color: white; cursor: pointer;"
+            title="Voltar para início">🏠</button>
+</header>
+<a href="/produtos/novo" class="btn btn-sm btn-primary">Novo Produto</a>
+
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Nome</th>
+            <th>Quantidade</th>
+            <th>Preço</th>
+
+        </tr>
+    </thead>
+    <tbody>
+
+        @{
+            int contador = 1;
+
+            @foreach(var produto in listaProdutos)
+            {
+                <tr>
+                    <td>@contador</td>
+                    <td>@produto.Nome</td>
+                    <td>@produto.Quantidade</td>
+                    <td>@produto.Preco</td>
+                </tr>
+
+                contador++;
+            }
+
+        }
+       
+    </tbody>
+</table>
+
+@code {
+    private List<Produto> listaProdutos = new();
+
+    protected override void OnInitialized()
+    {
+        CarregarProdutos();
+
+    }
+    private void CarregarProdutos()
+    {
+        listaProdutos = produtoDAO.ListarTodos();
+    }
+
+    private void VoltarInicio()
+    {
+        Navigation.NavigateTo("/");
+    }
+    
+
+}

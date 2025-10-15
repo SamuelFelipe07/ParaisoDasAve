@@ -1,0 +1,82 @@
+@page "/servicos"
+@using AppExemplo.Models
+@inject ServicoDAO servicoDAO
+@inject NavigationManager Navigation
+@rendermode InteractiveServer
+
+<PageTitle>Serviços</PageTitle>
+
+<!-- Cabeçalho -->
+<header class="topbar" style="display: flex; justify-content: space-between; align-items: center; background-color: #004b93; color: white; padding: 10px 20px;">
+    <div class="logo" style="display: flex; align-items: center; gap: 10px;">
+        <img src="https://img.icons8.com/color/48/000000/service.png" alt="Logo" />
+        <span style="font-weight: bold; font-size: 1.2rem;">GESTÃO DE SERVIÇOS</span>
+    </div>
+
+    <button @onclick="VoltarInicio"
+            style="font-size: 24px; background: none; border: none; color: white; cursor: pointer;"
+            title="Voltar para início">🏠</button>
+</header>
+
+<!-- Botão Novo -->
+<a href="/servicos/novo" class="btn btn-sm btn-primary mt-3" style="margin-left: 15px;">Novo Serviço</a>
+
+<!-- Tabela -->
+<table class="table mt-3">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Descrição</th>
+            <th>Tipo</th>
+            <th>Valor (R$)</th>
+            <th>Funcionário</th>
+            <th>Cliente</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (listaServicos == null || !listaServicos.Any())
+        {
+            <tr>
+                <td colspan="6" class="text-center text-muted">Nenhum serviço cadastrado</td>
+            </tr>
+        }
+        else
+        {
+            int contador = 1;
+
+            @foreach (var s in listaServicos)
+            {
+                <tr>
+                    <td>@contador</td>
+                    <td>@s.Descricao</td>
+                    <td>@s.Tipo</td>
+                    <td>@s.Valor</td>
+                    <td>@s.NomeFuncionario</td>
+                    <td>@s.NomeCliente</td>
+                </tr>
+
+                contador++;
+            }
+        }
+    </tbody>
+</table>
+
+@code {
+    private List<Servico> listaServicos = new();
+
+    protected override void OnInitialized()
+    {
+        CarregarServicos();
+    }
+
+    private void CarregarServicos()
+    
+    {
+        listaServicos = servicoDAO.Listar();
+    }
+
+    private void VoltarInicio()
+    {
+        Navigation.NavigateTo("/");
+    }
+}

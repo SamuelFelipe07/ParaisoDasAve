@@ -1,0 +1,65 @@
+@page "/fornecedor"
+
+@using AppExemplo.Models
+@inject FornecedorDAO fornecedorDAO;
+@inject NavigationManager Navigation
+
+<PageTitle>Funcionários</PageTitle>
+<header class="topbar" style="display: flex; justify-content: space-between; align-items: center; background-color: #004b93; color: white; padding: 10px 20px;">
+    <div class="logo" style="display: flex; align-items: center; gap: 10px;">
+        <img src="https://img.icons8.com/color/48/000000/bird--v1.png" alt="Logo" />
+        <span style="font-weight: bold; font-size: 1.2rem;">GESTÃO DE FORNECEDOR</span>
+    </div>
+
+    <button @onclick="VoltarInicio"
+            style="font-size: 24px; background: none; border: none; color: white; cursor: pointer;"
+            title="Voltar para início">🏠</button>
+</header>
+
+<a href="/fornecedor/novo" class="btn btn-sm btn-primary">Novo Fornecedor</a>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Nome</th>
+            <th>CPF</th>
+            <th>Telefone</th>
+            <th>Email</th>
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            int contador = 1;
+            @foreach (var fornecedor in listaFornecedor)
+            {
+                <tr>
+                    <td>@contador</td>
+                    <td>@fornecedor.Nome</td>
+                    <td>@fornecedor.Cnpj</td>
+                    <td>@fornecedor.Telefone</td>
+                    <td>@fornecedor.Email</td>
+                </tr>
+                contador++;
+            }
+        }
+    </tbody>
+</table>
+
+@code {
+    private List<Models.Fornecedor> listaFornecedor = new();
+
+    protected override void OnInitialized()
+    {
+        CarregarFornecedores();
+    }
+
+    private void CarregarFornecedores()
+    {
+        listaFornecedor = fornecedorDAO.ListarTodos();
+    }
+    private void VoltarInicio()
+    {
+        Navigation.NavigateTo("/");
+    }
+}

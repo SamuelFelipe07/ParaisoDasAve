@@ -1,0 +1,89 @@
+@page "/agendamento"
+
+@using AppExemplo.Models;
+@inject AnimalDAO animalDAO;
+@inject NavigationManager Navigation
+@rendermode InteractiveServer
+
+
+
+<PageTitle>Animais</PageTitle>
+
+
+<header class="topbar" style="display: flex; justify-content: space-between; align-items: center; background-color: #004b93; color: white; padding: 10px 20px;">
+    <div class="logo" style="display: flex; align-items: center; gap: 10px;">
+        <img src="https://img.icons8.com/color/48/000000/bird--v1.png" alt="Logo" />
+        <span style="font-weight: bold; font-size: 1.2rem;">GESTÃO DE ANIMAIS</span>
+    </div>
+
+    <button @onclick="VoltarInicio"
+            style="font-size: 24px; background: none; border: none; color: white; cursor: pointer;"
+            title="Voltar para início">🏠</button>
+</header>
+
+<a href="/animais/novo" class="btn btn-sm btn-primary">Novo Animal</a>
+
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Nome</th>
+            <th>Raça</th>
+            <th>Idade</th>
+            <th>Espécie</th>
+            <th>Porte</th>
+            <th>Peso</th>
+            <th>Diagnostico</th>
+            <th>Sexo</th>
+
+        </tr>
+    </thead>
+    <tbody>
+
+        @{
+            int contador = 1;
+
+            @foreach (var animal in listaAnimais)
+            {
+                <tr>
+                    <td>@contador</td>
+                    <td>@animal.Nome</td>
+                    <td>@animal.Raca</td>
+                    <td>@animal.Idade</td>
+                    <td>@animal.Especie</td>
+                    <td>@animal.Porte</td>
+                    <td>@animal.Peso</td>
+                    <td>@animal.Diagnostico</td>
+                    <td>@animal.Sexo</td>
+                </tr>
+
+                contador++;
+            }
+
+        }
+
+    </tbody>
+</table>
+
+@code {
+    private List<Animal> listaAnimais = new();
+    
+
+    protected override void OnInitialized()
+    {
+        CarregarAnimais();
+
+    }
+    private void CarregarAnimais()
+    {
+        listaAnimais = animalDAO.ListarTodos();
+    }
+    
+    private void VoltarInicio()
+    {
+        Navigation.NavigateTo("/");
+    }
+
+}
+

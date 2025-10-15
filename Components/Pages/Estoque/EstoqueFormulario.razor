@@ -1,0 +1,146 @@
+
+@page "/estoque/novo"
+@rendermode InteractiveServer
+
+@using AppExemplo.Models;
+
+@inject ProdutoDAO produtoDAO;
+@inject FornecedorDAO fornecedorDAO;
+@inject EstoqueDAO estoqueDAO;
+@inject NavigationManager Navigation;
+
+<PageTitle>Animais - Novo</PageTitle>
+
+<header class="topbar" style="display: flex; justify-content: space-between; align-items: center; background-color: #004b93; color: white; padding: 10px 20px;">
+    <div class="logo" style="display: flex; align-items: center; gap: 10px;">
+        <img src="https://img.icons8.com/color/48/000000/bird--v1.png" alt="Logo" />
+        <span style="font-weight: bold; font-size: 1.2rem;">GESTÃO DE ESTOQUE</span>
+    </div>
+
+    <button @onclick="VoltarInicio"
+            style="font-size: 24px; background: none; border: none; color: white; cursor: pointer;"
+            title="Voltar para início">🏠</button>
+</header>
+
+@if (erro != null)
+{
+    <div class="alert alert-danger">@erro</div>
+}
+
+@*
+CREATE TABLE Estoque (
+    id_est INT AUTO_INCREMENT PRIMARY KEY,
+    quantidade_est INT,
+    validade_est VARCHAR(300),
+    id_pro_fk int,
+    id_forn_fk int,
+    foreign key (id_pro_fk) references Produto(id_pro),
+    foreign key (id_forn_fk) references Fornecedores(id_forn)
+);
+*@
+
+<div class="container mt-4">
+    @if (listaProdutos.Count > 0 && listaFornecedores.Count > 0)
+    {
+        <EditForm Model="_novoEstoque" OnValidSubmit="Salvar" FormName="formEstoque">
+            <div class="row g-4">
+
+                <div class="mb-3">
+                    <label class="form-label">Nome Produto:</label>
+                    <select class="form-select" @bind="_novoEstoque.Id_Produto">
+                        <option value="">-- Selecione um Produto --</option>
+                        @foreach (var produto in listaProdutos)
+                        {
+                            <option value="@produto.Id">@produto.Nome</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Nome Fornecedor:</label>
+                    <select class="form-select" @bind="_novoEstoque.Id_Fornecedor">
+                        <option value="">-- Selecione um Fornecedor --</option>
+                        @foreach (var fornecedor in listaFornecedores)
+                        {
+                            <option value="@fornecedor.id">@fornecedor.Nome</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="col-md-6 col-lg-4">
+                    <label class="form-label fw-semibold">Validade:</label>
+                    <input @bind-value="_novoEstoque!.Validade" type="text" class="form-control form-control-lg" placeholder="Validade" />
+                </div>
+
+                <div class="d-flex justify-content-center gap-3 mt-4">
+                    <button type="button" class="btn btn-secondary px-4" @onclick="LimparFormulario">
+                        Limpar
+                    </button>
+                    <button type="submit" class="btn btn-primary px-4">
+                        Salvar
+                    </button>
+                </div>
+
+            </div>
+        </EditForm>
+    }
+    else
+    {
+        <div class="text-center text-muted mt-4">
+            <div class="spinner-border text-primary" role="status"></div>
+            <p>Carregando dados...</p>
+        </div>
+    }
+</div>
+
+
+
+
+@code {
+
+    private string? erro = null;
+
+    [SupplyParameterFromForm]
+    private Estoque? _novoEstoque { get; set; } = new();
+    private List<Produto> listaProdutos = new();
+    private List<Fornecedor> listaFornecedores = new List<Fornecedor>();
+
+
+    protected override void OnInitialized()
+    {
+        listaProdutos = produtoDAO.ListarTodos();
+        listaFornecedores = fornecedorDAO.ListarTodos();
+    }
+
+    private void Salvar()
+    {
+
+        try
+        {
+            if(_novoEstoque.Validade is null || _novoEstoque.Validade == "")
+            {
+                throw new Exception("O campo Validade é obrigatório.");
+            }
+
+            estoqueDAO.Inserir(_novoEstoque);
+
+            Navigation.NavigateTo("/estoque");
+        }catch(Exception ex)
+        {
+            erro = ex.Message;
+        }
+
+    }
+
+      private void LimparFormulario()
+        {
+            _novoEstoque = new Estoque(); // <--- totalmente qualificado
+            erro = null;
+            StateHasChanged();
+        }
+    private void VoltarInicio()
+    {
+        Navigation.NavigateTo("/");
+    }
+}
+

@@ -1,0 +1,138 @@
+@page "/funcionarios/novo"
+@rendermode InteractiveServer
+
+@using AppExemplo.Models;
+@inject FuncionarioDAO funcionarioDAO;
+@inject NavigationManager Navigation;
+
+<PageTitle>Funcionário - Novo</PageTitle>
+
+<header class="topbar" style="display: flex; justify-content: space-between; align-items: center; background-color: #004b93; color: white; padding: 10px 20px;">
+    <div class="logo" style="display: flex; align-items: center; gap: 10px;">
+        <img src="https://img.icons8.com/color/48/000000/bird--v1.png" alt="Logo" />
+        <span style="font-weight: bold; font-size: 1.2rem;">GESTÃO DE FUNCIONÁRIO</span>
+    </div>
+
+    <button @onclick="VoltarInicio"
+            style="font-size: 24px; background: none; border: none; color: white; cursor: pointer;"
+            title="Voltar para início">🏠</button>
+</header>
+
+
+@if (erro != null)
+{
+    <div class="alert alert-danger">
+        @erro
+    </div>
+}
+
+<div class="row">
+    <div class="col">
+        <EditForm Model="_novoFuncionario" OnSubmit="Salvar">
+        <div class="row g-4">
+                
+            <div class="col-md-6 col-lg-4">
+                <label>Nome</label>
+                <input @bind="_novoFuncionario!.Nome" type="text" class="form-control" name="nome" placeholder="Informe o nome do funcionário" />
+            </div>
+
+            <div class="col-md-6 col-lg-4">
+                <label>CPF</label>
+                <input @bind-value="_novoFuncionario!.Cpf" type="text" class="form-control" name="cpf" placeholder="Informe o CPF" />
+            </div>
+
+            <div class="col-md-6 col-lg-4">
+                <label>RG</label>
+                <input @bind-value="_novoFuncionario!.Rg" type="text" class="form-control" name="rg" placeholder="Informe o RG" />
+            </div>
+
+            <div class="col-md-6 col-lg-4">
+                <label>Telefone</label>
+                <input @bind-value="_novoFuncionario!.Telefone" type="text" class="form-control" name="telefone" placeholder="Informe o telefone" />
+            </div>
+
+            <div class="col-md-6 col-lg-4">
+                <label>Email</label>
+                <input @bind-value="_novoFuncionario!.Email" type="email" class="form-control" name="email" placeholder="Informe o email" />
+            </div>
+
+            <div class="col-md-6 col-lg-4">
+                <label>Bairro</label>
+                <input @bind-value="_novoFuncionario!.Bairro" type="text" class="form-control" name="bairro" placeholder="Informe o bairro" />
+            </div>
+
+            <div class="col-md-6 col-lg-4">
+                <label>Rua</label>
+                <input @bind-value="_novoFuncionario!.Rua" type="text" class="form-control" name="rua" placeholder="Informe a rua" />
+            </div>
+
+            <div class="col-md-6 col-lg-4">
+                <label>Número</label>
+                <input @bind-value="_novoFuncionario!.Numero" type="number" class="form-control" name="numero" placeholder="Informe o número da residência" />
+            </div>
+
+            <div class="col-md-6 col-lg-4">
+                <label>Sexo</label>
+                <input @bind-value="_novoFuncionario!.Sexo" type="text" class="form-control" name="sexo" placeholder="Informe o sexo" />
+            </div>
+
+            <div class="mb-4">
+                <label>Conta Bancária</label>
+                <textarea class="form-control" rows="5">@_novoFuncionario.ContaBancaria</textarea>
+            </div>
+            
+            <div class="d-flex justify-content-center gap-3 mt-4">
+                <button type="button" class="btn btn-secondary px-4" @onclick="LimparFormulario">
+                    Limpar
+                </button>
+                <button type="submit" class="btn btn-primary px-4">
+                    Salvar
+                </button>
+            </div>
+        </div>
+
+            
+
+        </EditForm>
+    </div>
+</div>
+
+@code {
+    private string? erro = null;
+
+    [SupplyParameterFromForm]
+    private AppExemplo.Models.Funcionario _novoFuncionario { get; set; } = new();
+
+
+
+    private void Salvar()
+    {
+        try
+        {
+            if (_novoFuncionario.Nome is null || _novoFuncionario.Nome == "")
+            {
+                throw new Exception("O campo nome é obrigatório");
+            }
+
+            funcionarioDAO.Inserir(_novoFuncionario);
+
+            Navigation.NavigateTo("/funcionarios");
+        }
+        catch (Exception ex)
+        {
+            erro = ex.Message;
+        }
+
+    }
+      private void LimparFormulario()
+        {
+            _novoFuncionario = new AppExemplo.Models.Funcionario(); // <--- totalmente qualificado
+            erro = null;
+            StateHasChanged();
+        }
+        private void VoltarInicio()
+    {
+        Navigation.NavigateTo("/");
+    }
+
+}

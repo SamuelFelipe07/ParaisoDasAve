@@ -1,0 +1,179 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f4f6f9;
+    display: flex;
+    height: 100vh;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 230px;
+    background-color: #1e73be;
+    color: white;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    font-size: 18px;
+    font-weight: bold;
+    border-bottom: 2px solid #155a96;
+}
+
+    .sidebar-header img {
+        height: 25px;
+        margin-right: 10px;
+    }
+
+header.topbar {
+    background-color: #004d91;
+    color: white;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 15px;
+    border-radius: 6px 6px 0 0;
+}
+
+    header.topbar .logo {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: bold;
+        font-size: 22px;
+    }
+
+        header.topbar .logo img {
+            width: 32px;
+        }
+
+    header.topbar .home-icon {
+        font-size: 26px;
+        cursor: pointer;
+    }
+
+.menu {
+    flex: 1;
+}
+
+    .menu a {
+        display: block;
+        padding: 12px 20px;
+        text-decoration: none;
+        color: white;
+        font-size: 14px;
+        border-bottom: 1px solid #2a7ccc;
+        transition: background 0.3s;
+    }
+
+        .menu a:hover {
+            background-color: #143450;
+        }
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+body, html {
+    height: 100%;
+    background: #f4f7fb;
+}
+/* Layout geral com menu lateral e conteúdo */
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f0f0f0;
+    display: flex;
+    height: 100vh;
+}
+
+.menu {
+    flex: 1;
+}
+
+    .menu a {
+        display: block;
+        padding: 12px 20px;
+        color: #fff;
+        text-decoration: none;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+        transition: background 0.3s;
+    }
+
+        .menu a:hover {
+            background: #1f5c99;
+        }
+
+/* ===== CONTEÚDO PRINCIPAL ===== */
+.content {
+    flex: 1;
+    padding: 20px;
+    background: #fff;
+    overflow-y: auto;
+}
+
+h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #2c7cc9;
+}
+
+label {
+    display: block;
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+input, select {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.form-row {
+    display: flex;
+    gap: 15px;
+}
+
+    .form-row div {
+        flex: 1;
+    }
+
+.buttons {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.btn-descartar {
+    background: #555;
+    color: white;
+    margin-right: 10px;
+}
+
+.btn-cadastrar {
+    background: #2c7cc9;
+    color: white;
+}
+
+    .btn-cadastrar:hover {
+        background: #1f5c99;
+    }

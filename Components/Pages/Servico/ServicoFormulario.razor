@@ -1,0 +1,152 @@
+@page "/servicos/novo"
+@rendermode InteractiveServer
+
+@using AppExemplo.Models;
+
+@inject ServicoDAO servicoDAO;
+@inject FuncionarioDAO funcionarioDAO;
+@inject ClienteDAO clienteDAO;
+@inject NavigationManager Navigation;
+
+<PageTitle>Serviços - Novo</PageTitle>
+
+<!-- Cabeçalho -->
+<header class="topbar" style="display: flex; justify-content: space-between; align-items: center; background-color: #004b93; color: white; padding: 10px 20px;">
+    <div class="logo" style="display: flex; align-items: center; gap: 10px;">
+        <img src="https://img.icons8.com/color/48/000000/service.png" alt="Logo" />
+        <span style="font-weight: bold; font-size: 1.2rem;">GESTÃO DE SERVIÇOS</span>
+    </div>
+
+    <button @onclick="VoltarInicio"
+            style="font-size: 24px; background: none; border: none; color: white; cursor: pointer;"
+            title="Voltar para início">🏠</button>
+</header>
+
+@if (erro != null)
+{
+    <div class="alert alert-danger mt-3">@erro</div>
+}
+
+@*
+CREATE TABLE Servico (
+    id_serv INT AUTO_INCREMENT PRIMARY KEY,
+    descricao_serv VARCHAR(200),
+    tipo_serv VARCHAR(100),
+    valor_serv DECIMAL(10,2),
+    id_func_fk INT,
+    id_cli_fk INT,
+    FOREIGN KEY (id_func_fk) REFERENCES Funcionario(id_func),
+    FOREIGN KEY (id_cli_fk) REFERENCES Cliente(id_cli)
+);
+*@
+
+<div class="container mt-4">
+    @if (listaFuncionarios.Count > 0 && listaClientes.Count > 0)
+    {
+        <EditForm Model="_novoServico" OnValidSubmit="Salvar" FormName="formServico">
+            <div class="row g-4">
+
+                <div class="col-md-6 col-lg-4">
+                    <label class="form-label fw-semibold">Descrição:</label>
+                    <input @bind-value="_novoServico!.Descricao" type="text" class="form-control form-control-lg" placeholder="Descrição do serviço" />
+                </div>
+
+                <div class="col-md-6 col-lg-4">
+                    <label class="form-label fw-semibold">Tipo:</label>
+                    <input @bind-value="_novoServico!.Tipo" type="text" class="form-control form-control-lg" placeholder="Tipo de serviço" />
+                </div>
+
+                <div class="col-md-6 col-lg-4">
+                    <label class="form-label fw-semibold">Valor (R$):</label>
+                    <input @bind-value="_novoServico!.Valor" type="number" step="0.01" class="form-control form-control-lg" placeholder="Valor" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Funcionário Responsável:</label>
+                    <select class="form-select" @bind="_novoServico.Id_Funcionario">
+                        <option value="">-- Selecione um Funcionário --</option>
+                        @foreach (var f in listaFuncionarios)
+                        {
+                            <option value="@f.Id">@f.Nome</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Cliente:</label>
+                    <select class="form-select" @bind="_novoServico.Id_Clientes">
+                        <option value="">-- Selecione um Cliente --</option>
+                        @foreach (var c in listaClientes)
+                        {
+                            <option value="@c.id">@c.Nome</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="d-flex justify-content-center gap-3 mt-4">
+                    <button type="button" class="btn btn-secondary px-4" @onclick="LimparFormulario">
+                        Limpar
+                    </button>
+                    <button type="submit" class="btn btn-primary px-4">
+                        Salvar
+                    </button>
+                </div>
+
+            </div>
+        </EditForm>
+    }
+    else
+    {
+        <div class="text-center text-muted mt-4">
+            <div class="spinner-border text-primary" role="status"></div>
+            <p>Carregando dados...</p>
+        </div>
+    }
+</div>
+
+@code {
+    private string? erro = null;
+
+    [SupplyParameterFromForm]
+    private Servico? _novoServico { get; set; } = new();
+
+    private List<Funcionario> listaFuncionarios = new();
+    private List<Cliente> listaClientes = new();
+
+    protected override void OnInitialized()
+    {
+        listaFuncionarios = funcionarioDAO.ListarTodos();
+        listaClientes = clienteDAO.ListarTodos();
+    }
+
+    private void Salvar()
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(_novoServico.Descricao))
+                throw new Exception("O campo Descrição é obrigatório.");
+
+            if (_novoServico.Valor is null || _novoServico.Valor == "")
+                throw new Exception("O campo Valor deve ser maior que zero.");
+
+            servicoDAO.Inserir(_novoServico);
+            Navigation.NavigateTo("/servicos");
+        }
+        catch (Exception ex)
+        {
+            erro = ex.Message;
+        }
+    }
+
+    private void LimparFormulario()
+    {
+        _novoServico = new Servico();
+        erro = null;
+        StateHasChanged();
+    }
+
+    private void VoltarInicio()
+    {
+        Navigation.NavigateTo("/");
+    }
+}

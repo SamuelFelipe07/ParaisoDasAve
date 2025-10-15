@@ -1,0 +1,107 @@
+@page "/estoque"
+@rendermode InteractiveServer
+
+@using AppExemplo.Models
+@inject EstoqueDAO estoqueDAO
+@inject NavigationManager Navigation
+
+<PageTitle>Gestão de Estoque</PageTitle>
+
+<div class="min-h-screen bg-gray-100 flex flex-col items-center py-10">
+    <div class="bg-white shadow-2xl rounded-2xl w-full max-w-6xl p-8">
+        
+        <!-- Cabeçalho -->
+      <header class="topbar">
+    <div class="logo">
+        <img src="https://img.icons8.com/color/48/000000/bird--v1.png" alt="Logo" />
+        GESTÃO DE ANIMAIS
+    </div>
+    <button @onclick="VoltarInicio" class="p-2 text-xl hover:text-gray-300 transition" title="Voltar para início">
+    🏠</button>
+      
+            
+</header>
+        <!-- Título -->
+        <h2 class="text-center text-blue-900 font-extrabold text-xl mt-8 mb-4">📦 Gestão de Estoque</h2>
+
+        <!-- Tabela -->
+        <div class="overflow-x-auto rounded-lg border border-gray-200 shadow-sm">
+            <table class="w-full text-sm text-center text-gray-700">
+                <thead class="bg-blue-800 text-black uppercase text-xs">
+                    <tr>
+                        <th class="py-3 px-4 rounded-tl-lg">#</th>
+                        <th class="py-3 px-4">Produto</th>
+                        <th class="py-3 px-4">Validade</th>
+                        <th class="py-3 px-4">Quantidade</th>
+                        <th class="py-3 px-4">Fornecedor</th>
+                        <th class="py-3 px-4 rounded-tr-lg">Marca</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (estoques == null || !estoques.Any())
+                    {
+                        <tr>
+                            <td colspan="6" class="py-6 italic text-gray-500">Nenhum produto cadastrado</td>
+                        </tr>
+                    }
+                    else
+                    {
+                        int contador = 1;
+                        @foreach (var e in estoques)
+                        {
+                            <tr class="hover:bg-blue-50 border-b border-gray-200 transition">
+                                <td class="py-2 px-3 font-semibold text-gray-600">@contador</td>
+                                <td class="py-2 px-3">@e.NomeProduto</td>
+                                <td class="py-2 px-3">@e.Validade</td>
+                                <td class="py-2 px-3">@e.Quantidade</td>
+                                <td class="py-2 px-3">@e.NomeFornecedor</td>
+                                <td class="py-2 px-3">@e.Marca</td>
+                            </tr>
+                            contador++;
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Botões -->
+            <div class="d-flex justify-content-center gap-3 mt-4">
+  
+            <a href="/estoque/novo" class="btn btn-sm btn-primary">Atualizar Estoque</a>
+
+
+            <a href="/produtos/novo" class="btn btn-sm btn-primary">Adicionar Produto</a>
+
+        </div>
+
+    </div>
+</div>
+
+@code {
+    private List<Estoque>? estoques = new();
+
+    protected override void OnInitialized()
+    {
+        CarregarEstoque();
+    }
+
+    private void CarregarEstoque()
+    {
+        estoques = estoqueDAO.Listar();
+    }
+
+    private void AtualizarEstoque()
+    {
+        CarregarEstoque();
+    }
+
+    private void AdicionarProduto()
+    {
+        Navigation.NavigateTo("/estoque/novo");
+    }
+
+    private void VoltarInicio()
+    {
+        Navigation.NavigateTo("/");
+    }
+}

@@ -1,0 +1,137 @@
+@page "/fornecedor/novo"
+@rendermode InteractiveServer
+
+@using AppExemplo.Models;
+@inject FornecedorDAO fornecedorDAO;
+@inject NavigationManager Navigation;
+
+<PageTitle>Fornecedor - Novo</PageTitle>
+
+<header class="topbar" style="display: flex; justify-content: space-between; align-items: center; background-color: #004b93; color: white; padding: 10px 20px;">
+    <div class="logo" style="display: flex; align-items: center; gap: 10px;">
+        <img src="https://img.icons8.com/color/48/000000/bird--v1.png" alt="Logo" />
+        <span style="font-weight: bold; font-size: 1.2rem;">GESTÃO DE FORNECEDOR</span>
+    </div>
+
+    <button @onclick="VoltarInicio"
+            style="font-size: 24px; background: none; border: none; color: white; cursor: pointer;"
+            title="Voltar para início">🏠</button>
+</header>
+
+@if (erro != null)
+{
+    <div class="alert alert-danger mt-3">
+        <strong>Erro:</strong> @erro
+    </div>
+}
+
+<div class="row">
+    <div class="col">
+        <EditForm Model="_novoFornecedor" OnSubmit="Salvar">
+            <div class="row g-4">
+                <div class="col-md-6 col-lg-4">
+                    <label>Nome</label>
+                    <input @bind="_novoFornecedor!.Nome" type="text" class="form-control" placeholder="Informe o nome do fornecedor" />
+                </div>
+
+                <div class="col-md-6 col-lg-4">
+                    <label>CNPJ</label>
+                    <input @bind="_novoFornecedor!.Cnpj" type="text" class="form-control" placeholder="Informe o CNPJ" />
+                </div>
+
+                <div class="col-md-6 col-lg-4">
+                    <label>Razão Social</label>
+                    <input @bind="_novoFornecedor!.razaoSocial" type="text" class="form-control" placeholder="Informe a razão social" />
+                </div>
+
+                <div class="col-md-6 col-lg-4">
+                    <label>Data de Criação</label>
+                    <input @bind="_novoFornecedor!.dataCriacao" type="text" class="form-control" placeholder="Informe a data de criação" />
+                </div>
+
+                <div class="col-md-6 col-lg-4">
+                    <label>Telefone</label>
+                    <input @bind="_novoFornecedor!.Telefone" type="text" class="form-control" placeholder="Informe o telefone" />
+                </div>
+
+                <div class="col-md-6 col-lg-4">
+                    <label>Email</label>
+                    <input @bind="_novoFornecedor!.Email" type="email" class="form-control" placeholder="Informe o email" />
+                </div>
+
+                <div class="col-md-6 col-lg-4">
+                    <label>Estado</label>
+                    <input @bind="_novoFornecedor!.estado" type="text" class="form-control" placeholder="Informe o estado" />
+                </div>
+
+                <div class="col-md-6 col-lg-4">
+                    <label>Cidade</label>
+                    <input @bind="_novoFornecedor!.cidade" type="text" class="form-control" placeholder="Informe a cidade" />
+                </div>
+
+                <div class="col-md-6 col-lg-4">
+                    <label>Bairro</label>
+                    <input @bind="_novoFornecedor!.bairro" type="text" class="form-control" placeholder="Informe o bairro" />
+                </div>
+
+                <div class="col-md-6 col-lg-4">
+                    <label>Rua</label>
+                    <input @bind="_novoFornecedor!.rua" type="text" class="form-control" placeholder="Informe a rua" />
+                </div>
+
+                <div class="col-md-6 col-lg-4">
+                    <label>Número</label>
+                    <input @bind="_novoFornecedor!.numero" type="number" class="form-control" placeholder="Informe o número" />
+                </div>
+
+                <div class="col-md-6 col-lg-4">
+                    <label>CEP</label>
+                    <input @bind="_novoFornecedor!.Cep" type="text" class="form-control" placeholder="Informe o CEP" />
+                </div>
+
+                <div class="d-flex justify-content-center gap-3 mt-4">
+                    <button type="button" class="btn btn-secondary px-4" @onclick="LimparFormulario">
+                        Limpar
+                    </button>
+                    <button type="submit" class="btn btn-primary px-4">
+                        Salvar
+                    </button>
+                </div>
+            </div>
+        </EditForm>
+    </div>
+</div>
+
+@code {
+    private string? erro = null;
+
+    [SupplyParameterFromForm]
+    private AppExemplo.Models.Fornecedor _novoFornecedor { get; set; } = new();
+
+    private void Salvar()
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(_novoFornecedor.Nome))
+                throw new Exception("O campo nome é obrigatório.");
+
+            fornecedorDAO.Inserir(_novoFornecedor);
+            Navigation.NavigateTo("/fornecedor"); // redireciona para a lista
+        }
+        catch (Exception ex)
+        {
+            erro = ex.Message;
+        }
+    }
+
+    private void LimparFormulario()
+    {
+            _novoFornecedor = new AppExemplo.Models.Fornecedor(); // <--- totalmente qualificado
+            erro = null;
+            StateHasChanged();
+    }
+    private void VoltarInicio()
+    {
+        Navigation.NavigateTo("/");
+    }
+}

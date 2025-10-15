@@ -1,0 +1,30 @@
+﻿
+@using AppExemplo.Configs
+@page "/teste-conexao"
+@inject Conexao conexao
+
+<h3>Teste de Conexão</h3>
+
+<p>@mensagem</p>
+
+@code {
+    string mensagem = "Testando...";
+
+    protected override void OnInitialized()
+    {
+        try
+        {
+            using var conn = conexao.ObterConexao();
+            conn.Open();
+            mensagem = "Conexão bem-sucedida! ✅";
+        }
+        catch (Exception ex)
+        {
+            mensagem = $"Erro: {ex.Message}";
+        }
+    }
+}
+
+@code {
+
+}

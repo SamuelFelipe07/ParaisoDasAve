@@ -1,0 +1,176 @@
+﻿
+@page "/animais/novo"
+@rendermode InteractiveServer
+
+@using AppExemplo.Models;
+
+@inject ClienteDAO clienteDAO;
+@inject AnimalDAO animalDao;
+@inject NavigationManager Navigation;
+
+<PageTitle>Animais - Novo</PageTitle>
+
+<header class="topbar" style="display: flex; justify-content: space-between; align-items: center; background-color: #004b93; color: white; padding: 10px 20px;">
+    <div class="logo" style="display: flex; align-items: center; gap: 10px;">
+        <img src="https://img.icons8.com/color/48/000000/bird--v1.png" alt="Logo" />
+        <span style="font-weight: bold; font-size: 1.2rem;">GESTÃO DE ANIMAIS</span>
+    </div>
+
+    <button @onclick="VoltarInicio"
+            style="font-size: 24px; background: none; border: none; color: white; cursor: pointer;"
+            title="Voltar para início">🏠</button>
+</header>
+
+@if (erro != null)
+{
+    <div class="alert alert-danger">@erro</div>
+}
+
+@*CREATE TABLE Animal (
+    id_ani INT AUTO_INCREMENT PRIMARY KEY,
+    nome_ani VARCHAR(255),
+    raca_ani VARCHAR(100),
+    idade_ani INT,
+    especie_ani VARCHAR(100),
+    porte_ani VARCHAR(50),
+    peso_ani DECIMAL(5,2),
+    diagnostico_ani TEXT,
+    sexo_ani VARCHAR(10),
+    id_cli_fk INT,
+    FOREIGN KEY (id_cli_fk) REFERENCES Cliente(id_cli)
+);
+*@
+
+<div class="container mt-4">
+    <EditForm Model="_novoAnimal" OnSubmit="Salvar" FormName="CadastroAnimal">
+        <div class="row g-4">
+
+            <div class="mb-3">
+                <label class="form-label">Dono (Cliente):</label>
+                <select class="form-select" @bind="_novoAnimal.id_cli_fk">
+
+                
+                    <option value="">-- Selecione um cliente --</option>
+                    
+                         @foreach (var cliente in listaClientes)
+                            {
+                                <option value="@cliente.id">@cliente.Nome</option>
+                            }
+                </select>
+            </div>
+
+            <div class="col-md-6 col-lg-4">
+                <label class="form-label fw-semibold">Nome</label>
+                <input @bind-value="_novoAnimal!.Nome" type="text" class="form-control form-control-lg" placeholder="Nome do Animal" />
+            </div>
+
+             <div class="col-md-6 col-lg-4">
+                <label class="form-label fw-semibold">Raca</label>
+                <input @bind-value="_novoAnimal!.Raca" type="text" class="form-control form-control-lg" placeholder="Raça do Animal" />
+            </div>
+
+
+
+            <div class="col-md-6 col-lg-4">
+                <label class="form-label fw-semibold">Idade:</label>
+                <input @bind-value="_novoAnimal!.Idade" type="text" class="form-control form-control-lg" placeholder="idade do Animal" />
+            </div>
+
+
+
+            <div class="col-md-6 col-lg-4">
+                <label class="form-label fw-semibold">Espécie:</label>
+                <input @bind-value="_novoAnimal!.Especie" type="text" class="form-control form-control-lg" placeholder="Espécie do Animal" />
+            </div>
+
+            <div class="mb-2">
+                <label class="form-label fw-semibold">Peso:</label>
+                <input @bind-value="_novoAnimal!.Peso" type="number" class="form-control form-control-lg" placeholder="Peso do Animal" />
+            </div>
+
+            <div class="col-md-6 col-lg-4">
+                <label class="form-label">Porte do Animal:</label>
+                <select class="form-select" @bind="_novoAnimal.Porte">
+                    <option value="">-- Selecione uma opção --</option>
+                    <option value="">Grande</option>
+                    <option value="">Médio</option>
+                    <option value="">Pequeno</option>
+
+                </select>
+            </div>
+            
+            <div class="col-md-6 col-lg-4">
+                <label>Sexo:</label>
+                <select class="form-select" @bind="_novoAnimal.Sexo">
+                <option value="">-- Selecione --</option>
+                <option value="Masculino">Masculino</option>
+                <option value="Feminino">Feminino</option>
+                </select>
+            </div>
+
+            <div class="form-group mb-4">
+                <label>Diagnostico</label>
+                <textarea class="form-control" rows="5">@_novoAnimal!.Diagnostico</textarea>
+            </div>
+
+            <div class="d-flex justify-content-center gap-3 mt-4">
+                <button type="button" class="btn btn-secondary px-4" @onclick="LimparFormulario">
+                    Limpar
+                </button>
+                <button type="submit" class="btn btn-primary px-4">
+                    Salvar
+                </button>
+            </div>
+
+            
+        </div>
+    </EditForm>
+</div>
+
+
+
+@code {
+
+    private string? erro = null;
+
+    [SupplyParameterFromForm]
+    private Animal? _novoAnimal { get; set; } = new();
+    private List<Cliente> listaClientes = new();
+
+
+    protected override void OnInitialized()
+    {
+        listaClientes = clienteDAO.ListarTodos();
+    }
+
+    private void Salvar()
+    {
+
+        try
+        {
+            if(_novoAnimal.Nome is null || _novoAnimal.Nome == "")
+            {
+                throw new Exception("O campo nome é obrigatório.");
+            }
+            animalDao.Inserir(_novoAnimal);
+
+            Navigation.NavigateTo("/animais");
+        }catch(Exception ex)
+        {
+            erro = ex.Message;
+        }
+
+    }
+
+      private void LimparFormulario()
+        {
+            _novoAnimal = new Animal(); // <--- totalmente qualificado
+            erro = null;
+            StateHasChanged();
+        }
+    private void VoltarInicio()
+    {
+        Navigation.NavigateTo("/");
+    }
+}
+
