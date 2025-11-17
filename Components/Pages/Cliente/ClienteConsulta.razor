@@ -53,6 +53,14 @@
                     <td>@cliente.dataNascimento</td>
                     <td>@cliente.estado</td>
                     <td>@cliente.cidade</td>
+                    <td>
+                        <a href="/clientes/@cliente.id/editar" class="btn btn-sm btn-primary mr-2">
+                            <i class="fas fa-edit"></i> Atualizar
+                        </a>
+                        <a href="/produtos/@cliente.id/excluir" class="btn btn-sm btn-danger">
+                            <i class="fas fa-trash"></i> Excluir
+                        </a>
+                    </td>
 
                 </tr>
 

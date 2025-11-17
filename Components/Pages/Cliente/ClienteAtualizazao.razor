@@ -1,0 +1,149 @@
+@page "/clientes/{Id:int}/editar"
+@rendermode InteractiveServer
+
+@using AppExemplo.Models;
+@inject ClienteDAO clienteDao;
+@inject NavigationManager Navigation;
+
+<PageTitle>Cliente - Novo</PageTitle>
+
+<header class="topbar" style="display: flex; justify-content: space-between; align-items: center; background-color: #004b93; color: white; padding: 10px 20px;">
+    <div class="logo" style="display: flex; align-items: center; gap: 10px;">
+        <img src="https://img.icons8.com/color/48/000000/bird--v1.png" alt="Logo" />
+        <span style="font-weight: bold; font-size: 1.2rem;">GESTÃO DE CLIENTES</span>
+    </div>
+
+    <button @onclick="VoltarInicio"
+            style="font-size: 24px; background: none; border: none; color: white; cursor: pointer;"
+            title="Voltar para início">🏠</button>
+</header>
+
+@if (erro != null)
+{
+    <div class="alert alert-danger">@erro</div>
+}
+
+<div class="container mt-4">
+    <EditForm Model="_cliente" OnSubmit="Salvar">
+        <div class="row g-4">
+
+            <div class="col-md-6 col-lg-4">
+                <label class="form-label fw-semibold">Nome</label>
+                <input @bind-value="_cliente!.Nome" type="text" class="form-control form-control-lg" placeholder="Nome do cliente" />
+            </div>
+
+            <div class="col-md-6 col-lg-4">
+                <label class="form-label fw-semibold">CPF</label>
+                <input @bind-value="_cliente!.CPF" type="text" class="form-control form-control-lg" placeholder="CPF do cliente" />
+            </div>
+
+            <div class="col-md-4 col-lg-3">
+                <label class="form-label fw-semibold">RG</label>
+                <input @bind-value="_cliente!.RG" type="text" class="form-control form-control-lg" placeholder="RG do cliente" />
+            </div>
+
+            <div class="col-md-4 col-lg-3">
+                <label class="form-label fw-semibold">Data de Nascimento</label>
+                <input @bind-value="_cliente!.dataNascimento" type="text" class="form-control form-control-lg" />
+            </div>
+
+            <div class="col-md-4 col-lg-2">
+                <label class="form-label fw-semibold">CEP</label>
+                <input @bind-value="_cliente!.CEP" type="text" class="form-control form-control-lg" placeholder="CEP" />
+            </div>
+
+            <div class="col-md-4 col-lg-2">
+                <label class="form-label fw-semibold">Estado</label>
+                <input @bind-value="_cliente!.estado" type="text" class="form-control form-control-lg" placeholder="Estado" />
+            </div>
+
+            <div class="col-md-4 col-lg-3">
+                <label class="form-label fw-semibold">Cidade</label>
+                <input @bind-value="_cliente!.cidade" type="text" class="form-control form-control-lg" placeholder="Cidade" />
+            </div>
+
+            <div class="col-md-4 col-lg-3">
+                <label class="form-label fw-semibold">Bairro</label>
+                <input @bind-value="_cliente!.bairro" type="text" class="form-control form-control-lg" placeholder="Bairro" />
+            </div>
+
+            <div class="col-md-4 col-lg-3">
+                <label class="form-label fw-semibold">Rua</label>
+                <input @bind-value="_cliente!.rua" type="text" class="form-control form-control-lg" placeholder="Rua" />
+            </div>
+
+            <div class="col-md-2 col-lg-1">
+                <label class="form-label fw-semibold">Nº</label>
+                <input @bind-value="_cliente!.numero" type="number" class="form-control form-control-lg" placeholder="Nº" />
+            </div>
+
+            <div class="d-flex justify-content-center gap-3 mt-4">
+                <button type="button" class="btn btn-secondary px-4" @onclick="LimparFormulario">
+                    Limpar
+                </button>
+                <button type="submit" class="btn btn-primary px-4">
+                    Salvar
+                </button>
+            </div>
+        </div>
+    </EditForm>
+</div>
+
+
+
+@code 
+{
+
+    private string? erro = null;
+
+    [Parameter]
+    public int Id {get ; set ; }
+    private Cliente _cliente = new();
+
+    protected override void OnInitialized()
+    {
+        
+        if(_cliente != null)
+        {
+            _cliente = clienteDao.BuscarPorId(Id);
+        }
+        else 
+        {
+            erro = "Cliente não encontrado";
+        }
+    }
+    private void Salvar()
+    {
+        try
+        {
+            if(_cliente.Nome is null || _cliente.Nome == "")
+            {
+                throw new Exception("O campo nome é obrigatório.");
+            }
+            clienteDao.Atualizar(_cliente);
+            Navigation.NavigateTo("/clientes");
+        }
+        catch(Exception ex)
+        {
+            erro = ex.Message;
+        }
+    }
+
+    private void LimparFormulario()
+    {
+        
+        _cliente = new Cliente(); // <--- totalmente qualificado
+        erro = null;
+        StateHasChanged();
+        
+    }
+
+    private void VoltarInicio()
+    {
+        Navigation.NavigateTo("/");
+    }
+
+
+}
+
+
