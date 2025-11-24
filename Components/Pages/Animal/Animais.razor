@@ -34,6 +34,7 @@
             <th>Idade</th>
             <th>Espécie</th>
             <th>Nome Do Cliente</th>
+            <th> </th>
 
         </tr>
     </thead>
@@ -59,6 +60,14 @@
                                 <td class="py-2 px-3">@a.Idade</td>
                                 <td class="py-2 px-3">@a.Especie</td>
                                 <td class="py-2 px-3">@a.NomeCliente</td>
+                                <td>
+                                    <a href="/animais/@a.Id/editar" class="btn btn-sm btn-primary mr-2">
+                                        <i class="fas fa-edit"></i> Atualizar
+                                    </a>
+                                    <a href="/animais/@a.Id/excluir" class="btn btn-sm btn-danger">
+                                        <i class="fas fa-trash"></i> Excluir
+                                    </a>
+                                </td>
                             </tr>
                             contador++;
                         }

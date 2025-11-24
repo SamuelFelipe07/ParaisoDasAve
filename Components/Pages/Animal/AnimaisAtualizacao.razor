@@ -1,0 +1,130 @@
+@page "/animais/{Id:int}/editar"
+@rendermode InteractiveServer
+
+@using AppExemplo.Models
+@inject AnimalDAO animalDao
+@inject NavigationManager Navigation
+
+<PageTitle>Animal - Editar</PageTitle>
+
+<header class="topbar" style="display: flex; justify-content: space-between; align-items: center; background-color: #004b93; color: white; padding: 10px 20px;">
+    <div class="logo" style="display: flex; align-items: center; gap: 10px;">
+        <img src="https://img.icons8.com/color/48/000000/bird--v1.png" alt="Logo" />
+        <span style="font-weight: bold; font-size: 1.2rem;">GESTÃO DE ANIMAIS</span>
+    </div>
+
+    <button @onclick="VoltarInicio"
+            style="font-size: 24px; background: none; border: none; color: white; cursor: pointer;"
+            title="Voltar para início">🏠</button>
+</header>
+
+@if (erro != null)
+{
+    <div class="alert alert-danger">@erro</div>
+}
+
+<div class="container mt-4">
+    <EditForm Model="_animal" OnSubmit="Salvar">
+        <div class="row g-4">
+
+            <div class="col-md-6 col-lg-4">
+                <label class="form-label fw-semibold">Nome</label>
+                <input @bind-value="_animal!.Nome" type="text" class="form-control form-control-lg" placeholder="Nome do animal" />
+            </div>
+
+            <div class="col-md-6 col-lg-4">
+                <label class="form-label fw-semibold">Raça</label>
+                <input @bind-value="_animal!.Raca" type="text" class="form-control form-control-lg" placeholder="Raça do animal" />
+            </div>
+
+            <div class="col-md-4 col-lg-3">
+                <label class="form-label fw-semibold">Idade</label>
+                <input @bind-value="_animal!.Idade" type="number" class="form-control form-control-lg" placeholder="Idade" />
+            </div>
+
+            <div class="col-md-4 col-lg-3">
+                <label class="form-label fw-semibold">Espécie</label>
+                <input @bind-value="_animal!.Especie" type="text" class="form-control form-control-lg" placeholder="Espécie" />
+            </div>
+
+            <div class="col-md-4 col-lg-2">
+                <label class="form-label fw-semibold">Porte</label>
+                <input @bind-value="_animal!.Porte" type="text" class="form-control form-control-lg" placeholder="Porte" />
+            </div>
+
+            <div class="col-md-4 col-lg-2">
+                <label class="form-label fw-semibold">Peso</label>
+                <input @bind-value="_animal!.Peso" type="number" step="0.1" class="form-control form-control-lg" placeholder="Peso" />
+            </div>
+
+            <div class="col-md-4 col-lg-3">
+                <label class="form-label fw-semibold">Diagnóstico</label>
+                <input @bind-value="_animal!.Diagnostico" type="text" class="form-control form-control-lg" placeholder="Diagnóstico" />
+            </div>
+
+            <div class="col-md-4 col-lg-3">
+                <label class="form-label fw-semibold">Sexo</label>
+                <input @bind-value="_animal!.Sexo" type="text" class="form-control form-control-lg" placeholder="Sexo" />
+            </div>
+
+            <div class="d-flex justify-content-center gap-3 mt-4">
+                <button type="button" class="btn btn-secondary px-4" @onclick="LimparFormulario">
+                    Limpar
+                </button>
+                <button type="submit" class="btn btn-primary px-4">
+                    Salvar
+                </button>
+            </div>
+        </div>
+    </EditForm>
+</div>
+
+@code
+{
+    private string? erro = null;
+
+    [Parameter]
+    public int Id { get; set; }
+
+    private Animal _animal = new();
+
+    protected override void OnParametersSet()
+    {
+        _animal = animalDao.BuscarPorId(Id);
+
+        if (_animal == null)
+        {
+            erro = "Animal não encontrado";
+            _animal = new Animal();
+        }
+    }
+
+
+    private void Salvar()
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(_animal.Nome))
+                throw new Exception("O campo nome é obrigatório.");
+
+            animalDao.Atualizar(_animal);
+            Navigation.NavigateTo("/animais");
+        }
+        catch (Exception ex)
+        {
+            erro = ex.Message;
+        }
+    }
+
+    private void LimparFormulario()
+    {
+        _animal = new Animal();
+        erro = null;
+        StateHasChanged();
+    }
+
+    private void VoltarInicio()
+    {
+        Navigation.NavigateTo("/");
+    }
+}

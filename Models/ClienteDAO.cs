@@ -121,16 +121,17 @@ namespace AppExemplo.Models
                 "UPDATE cliente SET nome_cli = @_Nome, cpf_cli = @_CPF, data_nascimento_cli = @_dataNascimento, rg_cli = @_RG, bairro_cli = @_bairro, rua_cli = @_rua, numero_cli = @_numero, cep_cli = @_CEP, estado_cli = @_estado, cidade_cli = @_cidade WHERE id_cli = @_id;");
 
 
-                comando.Parameters.AddWithValue("@_nome_cli", cliente.Nome);
-                comando.Parameters.AddWithValue("@_cpf_cli", cliente.CPF);
-                comando.Parameters.AddWithValue("@_data_nascimento_cli", cliente.dataNascimento);
-                comando.Parameters.AddWithValue("@_rg_cli", cliente.RG);
-                comando.Parameters.AddWithValue("@_bairro_cli", cliente.bairro);
-                comando.Parameters.AddWithValue("@_rua_cli", cliente.rua);
-                comando.Parameters.AddWithValue("@_numero_cli", cliente.numero);
-                comando.Parameters.AddWithValue("@_cep_cli", cliente.CEP);
-                comando.Parameters.AddWithValue("@_estado_cli", cliente.estado);
-                comando.Parameters.AddWithValue("@_cidade_cli", cliente.cidade);
+                comando.Parameters.AddWithValue("@_Nome", cliente.Nome);
+                comando.Parameters.AddWithValue("@_CPF", cliente.CPF);
+                comando.Parameters.AddWithValue("@_dataNascimento", cliente.dataNascimento);
+                comando.Parameters.AddWithValue("@_RG", cliente.RG);
+                comando.Parameters.AddWithValue("@_bairro", cliente.bairro);
+                comando.Parameters.AddWithValue("@_rua", cliente.rua);
+                comando.Parameters.AddWithValue("@_numero", cliente.numero);
+                comando.Parameters.AddWithValue("@_CEP", cliente.CEP);
+                comando.Parameters.AddWithValue("@_estado", cliente.estado);
+                comando.Parameters.AddWithValue("@_cidade", cliente.cidade);
+                comando.Parameters.AddWithValue("@_id", cliente.id);
 
                 comando.ExecuteNonQuery();
             }

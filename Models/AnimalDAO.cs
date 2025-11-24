@@ -43,6 +43,7 @@ namespace AppExemplo.Models
 
             var comando = _conexao.CreateCommand(@"
                 SELECT 
+                    a.id_ani AS Id,
                     a.nome_ani AS Nome,
                     a.raca_ani AS Raca,
                     a.porte_ani AS Porte,
@@ -60,6 +61,7 @@ namespace AppExemplo.Models
                 {
                     var animal = new Animal
                     {
+                        Id = leitor.GetInt32("Id"),
                         Nome = leitor.IsDBNull(leitor.GetOrdinal("Nome")) ? "" : leitor.GetString("Nome"),
                         Raca = leitor.IsDBNull(leitor.GetOrdinal("Raca")) ? "" : leitor.GetString("Raca"),
                         Idade = leitor.IsDBNull(leitor.GetOrdinal("Idade")) ? 0 : leitor.GetInt32("Idade"),
@@ -76,6 +78,89 @@ namespace AppExemplo.Models
 
             return lista;
         }
+
+        public void Atualizar(Animal animal)
+        {
+            try
+            {
+                var comando = _conexao.CreateCommand(
+                @"UPDATE Animal 
+                SET 
+                    nome_ani = @_nome_ani,
+                    raca_ani = @_raca_ani,
+                    idade_ani = @_idade_ani,
+                    especie_ani = @_especie_ani,
+                    porte_ani = @_porte_ani,
+                    peso_ani = @_peso_ani,
+                    diagnostico_ani = @_diagnostico_ani,
+                    sexo_ani = @_sexo_ani
+                WHERE id_ani = @_id_ani;");
+
+                comando.Parameters.AddWithValue("@_nome_ani", animal.Nome ?? "");
+                comando.Parameters.AddWithValue("@_raca_ani", animal.Raca ?? "");
+                comando.Parameters.AddWithValue("@_idade_ani", animal.Idade);
+                comando.Parameters.AddWithValue("@_especie_ani", animal.Especie ?? "");
+                comando.Parameters.AddWithValue("@_porte_ani", animal.Porte ?? "");
+                comando.Parameters.AddWithValue("@_peso_ani", animal.Peso);
+                comando.Parameters.AddWithValue("@_diagnostico_ani", animal.Diagnostico ?? "");
+                comando.Parameters.AddWithValue("@_sexo_ani", animal.Sexo ?? "");
+                comando.Parameters.AddWithValue("@_id_ani", animal.Id);
+
+                comando.ExecuteNonQuery();
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        public void Excluir(int id)
+        {
+            try
+            {
+                var comando = _conexao.CreateCommand("DELETE FROM Animal WHERE id_ani = @id_ani;");
+                comando.Parameters.AddWithValue("@id_ani", id);
+
+                comando.ExecuteNonQuery();
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        public Animal? BuscarPorId(int id)
+        {
+            var comando = _conexao.CreateCommand("SELECT * FROM Animal WHERE id_ani = @Id;");
+            comando.Parameters.AddWithValue("@Id", id);
+
+            var leitor = comando.ExecuteReader();
+
+            if (leitor.Read())
+            {
+                var animal = new Animal
+                {
+                    Id = leitor.GetInt32(leitor.GetOrdinal("id_ani")),
+                    Nome = leitor.IsDBNull(leitor.GetOrdinal("nome_ani")) ? "" : leitor.GetString(leitor.GetOrdinal("nome_ani")),
+                    Raca = leitor.IsDBNull(leitor.GetOrdinal("raca_ani")) ? "" : leitor.GetString(leitor.GetOrdinal("raca_ani")),
+                    Idade = leitor.IsDBNull(leitor.GetOrdinal("idade_ani")) ? 0 : leitor.GetInt32(leitor.GetOrdinal("idade_ani")),
+                    Especie = leitor.IsDBNull(leitor.GetOrdinal("especie_ani")) ? "" : leitor.GetString(leitor.GetOrdinal("especie_ani")),
+                    Porte = leitor.IsDBNull(leitor.GetOrdinal("porte_ani")) ? "" : leitor.GetString(leitor.GetOrdinal("porte_ani")),
+                    Peso = leitor.IsDBNull(leitor.GetOrdinal("peso_ani")) ? 0 : leitor.GetFloat(leitor.GetOrdinal("peso_ani")),
+                    Diagnostico = leitor.IsDBNull(leitor.GetOrdinal("diagnostico_ani")) ? "" : leitor.GetString(leitor.GetOrdinal("diagnostico_ani")),
+                    Sexo = leitor.IsDBNull(leitor.GetOrdinal("sexo_ani")) ? "" : leitor.GetString(leitor.GetOrdinal("sexo_ani"))
+                };
+
+                return animal;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+
+
 
 
     }
