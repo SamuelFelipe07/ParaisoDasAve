@@ -31,6 +31,7 @@
             <th>Valor (R$)</th>
             <th>Funcionário</th>
             <th>Cliente</th>
+            <th> </th>
         </tr>
     </thead>
     <tbody>
@@ -53,6 +54,14 @@
                     <td>@s.Valor</td>
                     <td>@s.NomeFuncionario</td>
                     <td>@s.NomeCliente</td>
+                    <td>
+                        <a href="/servicos/@s.Id/editar" class="btn btn-sm btn-primary mr-2">
+                            <i class="fas fa-edit"></i> Atualizar
+                        </a>
+                        <a href="/servicos/@s.Id/excluir" class="btn btn-sm btn-danger">
+                            <i class="fas fa-trash"></i> Excluir
+                        </a>
+                    </td>
                 </tr>
 
                 contador++;
@@ -72,7 +81,7 @@
     private void CarregarServicos()
     
     {
-        listaServicos = servicoDAO.Listar();
+        listaServicos = servicoDAO.ListarTodos();
     }
 
     private void VoltarInicio()

@@ -1,0 +1,116 @@
+@page "/animais/{Id:int}/excluir"
+@rendermode InteractiveServer
+
+@using AppExemplo.Models;
+@inject AnimalDAO animalDao;
+@inject NavigationManager Navigation;
+
+<PageTitle>Produtos</PageTitle>
+
+<header class="topbar" style="display: flex; justify-content: space-between; align-items: center; background-color: #004b93; color: white; padding: 10px 20px;">
+    <div class="logo" style="display: flex; align-items: center; gap: 10px;">
+        <img src="https://img.icons8.com/color/48/000000/bird--v1.png" alt="Logo" />
+        <span style="font-weight: bold; font-size: 1.2rem;">EXCLUSÃO DE Animais</span>
+    </div>
+
+    <button @onclick="VoltarInicio"
+            style="font-size: 24px; background: none; border: none; color: white; cursor: pointer;"
+            title="Voltar para início">🏠</button>
+</header>
+
+@if (erro != string.Empty)
+{
+  <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4" role="alert">
+    <strong class="font-bold">Erro!</strong>
+    <span class="block sm:inline">@erro</span>
+  </div>
+}
+
+
+<EditForm Model="animal" OnSubmit="Excluir">
+  <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4" role="alert">
+    <strong class="font-bold">Atenção!</strong>
+    <span class="block sm:inline">Esta ação não pode ser desfeita.</span>
+
+
+    <p class="text-lg">Tem certeza que deseja excluir o Animal <strong>@animal.Nome</strong>?</p>
+  </div>
+
+<div style="margin-top: 10px; display: flex; gap: 10px;">
+
+    <button type="submit"
+            style="
+                background-color: #dc2626;
+                color: white;
+                padding: 8px 18px;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+                font-size: 15px;
+            ">
+        Excluir
+    </button>
+
+    <a href="/animais"
+       style="
+            background-color: #6b7280;
+            color: white;
+            padding: 8px 18px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 15px;
+            display: inline-block;
+       ">
+        Cancelar
+    </a>
+
+</div>
+
+
+</EditForm>
+
+@code {
+
+  private string erro = string.Empty;
+
+  [Parameter]
+  public int Id { get; set; }
+
+  [SupplyParameterFromForm]
+  private Animal animal { get; set; } = new();
+
+  protected override void OnInitialized()
+  {
+    var _animal = animalDao.BuscarPorId(Id);
+
+    if (_animal != null)
+    {
+      animal = _animal;
+    }
+    else
+    {
+      erro = "Animal não encontrado.";
+    }
+  }
+
+  private void Excluir()
+  {
+    try
+    {
+      animalDao.Excluir(animal.Id);
+
+      Navigation.NavigateTo("/animais");
+    }
+    catch (Exception ex)
+    {
+      erro = $"Erro ao excluir o Animal: {ex.Message}";
+    }
+
+  }
+
+      private void VoltarInicio()
+    {
+        Navigation.NavigateTo("/");
+    }
+
+}

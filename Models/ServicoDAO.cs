@@ -1,7 +1,6 @@
 using AppExemplo.Configs;
 using System;
 using System.Collections.Generic;
-using MySql.Data.MySqlClient;
 
 namespace AppExemplo.Models
 {
@@ -14,14 +13,16 @@ namespace AppExemplo.Models
             _conexao = conexao;
         }
 
-        // INSERIR
+        // 🔹 INSERIR
         public void Inserir(Servico servico)
         {
             try
             {
                 var comando = _conexao.CreateCommand(@"
-                    INSERT INTO GestaoServicos (id_fun_fk, descricao_ser, tipo_ser, valor_ser, id_cli_fk)
-                    VALUES (@id_fun_fk, @descricao_ser, @tipo_ser, @valor_ser, @id_cli_fk)
+                    INSERT INTO GestaoServicos 
+                    (id_fun_fk, descricao_ser, tipo_ser, valor_ser, id_cli_fk)
+                    VALUES 
+                    (@id_fun_fk, @descricao_ser, @tipo_ser, @valor_ser, @id_cli_fk)
                 ");
 
                 comando.Parameters.AddWithValue("@id_fun_fk", servico.Id_Funcionario);
@@ -38,8 +39,8 @@ namespace AppExemplo.Models
             }
         }
 
-        // LISTAR TODOS (com INNER JOIN)
-        public List<Servico> Listar()
+        // 🔹 LISTAR TODOS (com nomes)
+        public List<Servico> ListarTodos()
         {
             var lista = new List<Servico>();
 
@@ -59,27 +60,90 @@ namespace AppExemplo.Models
                 ORDER BY s.id_ser DESC
             ");
 
-            using (var leitor = comando.ExecuteReader())
-            {
-                while (leitor.Read())
-                {
-                    var servico = new Servico
-                    {
-                        Id = leitor.GetInt32("id_ser"),
-                        Descricao = leitor.IsDBNull(leitor.GetOrdinal("descricao_ser")) ? string.Empty : leitor.GetString("descricao_ser"),
-                        Tipo = leitor.IsDBNull(leitor.GetOrdinal("tipo_ser")) ? string.Empty : leitor.GetString("tipo_ser"),
-                        Valor = leitor.IsDBNull(leitor.GetOrdinal("valor_ser")) ? string.Empty : leitor.GetDouble("valor_ser").ToString("F2"),
-                        Id_Funcionario = leitor.GetInt32("id_fun_fk"),
-                        Id_Clientes = leitor.GetInt32("id_cli_fk"),
-                        NomeFuncionario = leitor.GetString("NomeFuncionario"),
-                        NomeCliente = leitor.GetString("NomeCliente")
-                    };
+            var leitor = comando.ExecuteReader();
 
-                    lista.Add(servico);
-                }
+            while (leitor.Read())
+            {
+                var servico = new Servico
+                {
+                    Id = leitor.GetInt32("id_ser"),
+                    Descricao = leitor.GetString("descricao_ser"),
+                    Tipo = leitor.GetString("tipo_ser"),
+                    Valor = leitor.GetDouble("valor_ser").ToString("F2"),
+                    Id_Funcionario = leitor.GetInt32("id_fun_fk"),
+                    Id_Clientes = leitor.GetInt32("id_cli_fk"),
+                    NomeFuncionario = leitor.GetString("NomeFuncionario"),
+                    NomeCliente = leitor.GetString("NomeCliente")
+                };
+
+                lista.Add(servico);
             }
 
             return lista;
+        }
+
+        // 🔹 BUSCAR POR ID
+        public Servico BuscarPorId(int id)
+        {
+            var comando = _conexao.CreateCommand(@"
+                SELECT *
+                FROM GestaoServicos
+                WHERE id_ser = @id
+            ");
+
+            comando.Parameters.AddWithValue("@id", id);
+
+            var leitor = comando.ExecuteReader();
+
+            if (leitor.Read())
+            {
+                return new Servico
+                {
+                    Id = leitor.GetInt32("id_ser"),
+                    Descricao = leitor.GetString("descricao_ser"),
+                    Tipo = leitor.GetString("tipo_ser"),
+                    Valor = leitor.GetDouble("valor_ser").ToString("F2"),
+                    Id_Funcionario = leitor.GetInt32("id_fun_fk"),
+                    Id_Clientes = leitor.GetInt32("id_cli_fk")
+                };
+            }
+
+            return null!;
+        }
+
+        // 🔹 ATUALIZAR
+        public void Atualizar(Servico servico)
+        {
+            var comando = _conexao.CreateCommand(@"
+                UPDATE GestaoServicos SET
+                    descricao_ser = @descricao_ser,
+                    tipo_ser = @tipo_ser,
+                    valor_ser = @valor_ser,
+                    id_fun_fk = @id_fun_fk,
+                    id_cli_fk = @id_cli_fk
+                WHERE id_ser = @id
+            ");
+
+            comando.Parameters.AddWithValue("@descricao_ser", servico.Descricao);
+            comando.Parameters.AddWithValue("@tipo_ser", servico.Tipo);
+            comando.Parameters.AddWithValue("@valor_ser", servico.Valor);
+            comando.Parameters.AddWithValue("@id_fun_fk", servico.Id_Funcionario);
+            comando.Parameters.AddWithValue("@id_cli_fk", servico.Id_Clientes);
+            comando.Parameters.AddWithValue("@id", servico.Id);
+
+            comando.ExecuteNonQuery();
+        }
+
+        // 🔹 EXCLUIR
+        public void Excluir(int id)
+        {
+            var comando = _conexao.CreateCommand(
+                "DELETE FROM GestaoServicos WHERE id_ser = @id"
+            );
+
+            comando.Parameters.AddWithValue("@id", id);
+
+            comando.ExecuteNonQuery();
         }
     }
 }

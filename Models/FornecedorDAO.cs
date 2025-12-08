@@ -13,37 +13,35 @@ namespace AppExemplo.Models
             _conexao = conexao;
         }
 
-        // 🔹 INSERIR NOVO FORNECEDOR
+        // 🔹 INSERIR
         public void Inserir(Fornecedor fornecedor)
         {
-            try
-            {
-                var comando = _conexao.CreateCommand(@"INSERT INTO Fornecedores (nome_forn, cnpj_forn, razao_social_forn, data_criacao_forn, telefone_forn, email_forn, estado_forn, cidade_forn, bairro_forn, rua_forn, numero_forn, cep_forn)
-                    VALUES (@_nome_forn, @_cnpj_forn, @_razao_social_forn, @_data_criacao_forn, @_telefone_forn, @_email_forn, @_estado_forn, @_cidade_forn, @_bairro_forn, @_rua_forn, @_numero_forn, @_cep_forn)
-                ");
+            var comando = _conexao.CreateCommand(@"
+                INSERT INTO Fornecedores
+                (nome_forn, cnpj_forn, razao_social_forn, data_criacao_forn, telefone_forn, email_forn,
+                 estado_forn, cidade_forn, bairro_forn, rua_forn, numero_forn, cep_forn)
+                VALUES
+                (@nome, @cnpj, @razao, @data, @telefone, @email,
+                 @estado, @cidade, @bairro, @rua, @numero, @cep)
+            ");
 
-                comando.Parameters.AddWithValue("@_nome_forn", fornecedor.Nome);
-                comando.Parameters.AddWithValue("@_cnpj_forn", fornecedor.Cnpj);
-                comando.Parameters.AddWithValue("@_razao_social_forn", fornecedor.razaoSocial);
-                comando.Parameters.AddWithValue("@_data_criacao_forn", fornecedor.dataCriacao);
-                comando.Parameters.AddWithValue("@_telefone_forn", fornecedor.Telefone);
-                comando.Parameters.AddWithValue("@_email_forn", fornecedor.Email);
-                comando.Parameters.AddWithValue("@_estado_forn", fornecedor.estado);
-                comando.Parameters.AddWithValue("@_cidade_forn", fornecedor.cidade);
-                comando.Parameters.AddWithValue("@_bairro_forn", fornecedor.bairro);
-                comando.Parameters.AddWithValue("@_rua_forn", fornecedor.rua);
-                comando.Parameters.AddWithValue("@_numero_forn", fornecedor.numero);
-                comando.Parameters.AddWithValue("@_cep_forn", fornecedor.Cep);
+            comando.Parameters.AddWithValue("@nome", fornecedor.Nome);
+            comando.Parameters.AddWithValue("@cnpj", fornecedor.Cnpj);
+            comando.Parameters.AddWithValue("@razao", fornecedor.razaoSocial);
+            comando.Parameters.AddWithValue("@data", fornecedor.dataCriacao);
+            comando.Parameters.AddWithValue("@telefone", fornecedor.Telefone);
+            comando.Parameters.AddWithValue("@email", fornecedor.Email);
+            comando.Parameters.AddWithValue("@estado", fornecedor.estado);
+            comando.Parameters.AddWithValue("@cidade", fornecedor.cidade);
+            comando.Parameters.AddWithValue("@bairro", fornecedor.bairro);
+            comando.Parameters.AddWithValue("@rua", fornecedor.rua);
+            comando.Parameters.AddWithValue("@numero", fornecedor.numero);
+            comando.Parameters.AddWithValue("@cep", fornecedor.Cep);
 
-                comando.ExecuteNonQuery();
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Erro ao inserir fornecedor: " + ex.Message);
-            }
+            comando.ExecuteNonQuery();
         }
 
-        // 🔹 LISTAR TODOS OS FORNECEDORES
+        // 🔹 LISTAR TODOS
         public List<Fornecedor> ListarTodos()
         {
             var lista = new List<Fornecedor>();
@@ -53,27 +51,109 @@ namespace AppExemplo.Models
 
             while (leitor.Read())
             {
-                var fornecedor = new Fornecedor
+                lista.Add(new Fornecedor
                 {
                     id = leitor.GetInt32("id_forn"),
-                    Nome = leitor.IsDBNull(leitor.GetOrdinal("nome_forn")) ? "" : leitor.GetString("nome_forn"),
-                    Cnpj = leitor.IsDBNull(leitor.GetOrdinal("cnpj_forn")) ? "" : leitor.GetString("cnpj_forn"),
-                    razaoSocial = leitor.IsDBNull(leitor.GetOrdinal("razao_social_forn")) ? "" : leitor.GetString("razao_social_forn"),
-                    dataCriacao = leitor.IsDBNull(leitor.GetOrdinal("data_criacao_forn")) ? "" : leitor.GetString("data_criacao_forn"),
-                    Telefone = leitor.IsDBNull(leitor.GetOrdinal("telefone_forn")) ? "" : leitor.GetString("telefone_forn"),
-                    Email = leitor.IsDBNull(leitor.GetOrdinal("email_forn")) ? "" : leitor.GetString("email_forn"),
-                    estado = leitor.IsDBNull(leitor.GetOrdinal("estado_forn")) ? "" : leitor.GetString("estado_forn"),
-                    cidade = leitor.IsDBNull(leitor.GetOrdinal("cidade_forn")) ? "" : leitor.GetString("cidade_forn"),
-                    bairro = leitor.IsDBNull(leitor.GetOrdinal("bairro_forn")) ? "" : leitor.GetString("bairro_forn"),
-                    rua = leitor.IsDBNull(leitor.GetOrdinal("rua_forn")) ? "" : leitor.GetString("rua_forn"),
-                    numero = leitor.IsDBNull(leitor.GetOrdinal("numero_forn")) ? (int?)null : leitor.GetInt32("numero_forn"),
-                    Cep = leitor.IsDBNull(leitor.GetOrdinal("cep_forn")) ? "" : leitor.GetString("cep_forn")
-                };
-
-                lista.Add(fornecedor);
+                    Nome = leitor.GetString("nome_forn"),
+                    Cnpj = leitor.GetString("cnpj_forn"),
+                    razaoSocial = leitor.GetString("razao_social_forn"),
+                    dataCriacao = leitor.GetString("data_criacao_forn"),
+                    Telefone = leitor.GetString("telefone_forn"),
+                    Email = leitor.GetString("email_forn"),
+                    estado = leitor.GetString("estado_forn"),
+                    cidade = leitor.GetString("cidade_forn"),
+                    bairro = leitor.GetString("bairro_forn"),
+                    rua = leitor.GetString("rua_forn"),
+                    numero = leitor.IsDBNull(leitor.GetOrdinal("numero_forn"))
+                        ? null
+                        : leitor.GetInt32("numero_forn"),
+                    Cep = leitor.GetString("cep_forn")
+                });
             }
 
             return lista;
+        }
+
+        // 🔹 BUSCAR POR ID
+        public Fornecedor BuscarPorId(int id)
+        {
+            var comando = _conexao.CreateCommand(
+                "SELECT * FROM Fornecedores WHERE id_forn = @id"
+            );
+            comando.Parameters.AddWithValue("@id", id);
+
+            var leitor = comando.ExecuteReader();
+
+            if (leitor.Read())
+            {
+                return new Fornecedor
+                {
+                    id = leitor.GetInt32("id_forn"),
+                    Nome = leitor.GetString("nome_forn"),
+                    Cnpj = leitor.GetString("cnpj_forn"),
+                    razaoSocial = leitor.GetString("razao_social_forn"),
+                    dataCriacao = leitor.GetString("data_criacao_forn"),
+                    Telefone = leitor.GetString("telefone_forn"),
+                    Email = leitor.GetString("email_forn"),
+                    estado = leitor.GetString("estado_forn"),
+                    cidade = leitor.GetString("cidade_forn"),
+                    bairro = leitor.GetString("bairro_forn"),
+                    rua = leitor.GetString("rua_forn"),
+                    numero = leitor.IsDBNull(leitor.GetOrdinal("numero_forn"))
+                        ? null
+                        : leitor.GetInt32("numero_forn"),
+                    Cep = leitor.GetString("cep_forn")
+                };
+            }
+
+            return null;
+        }
+
+        // 🔹 ATUALIZAR
+        public void Atualizar(Fornecedor fornecedor)
+        {
+            var comando = _conexao.CreateCommand(@"
+                UPDATE Fornecedores SET
+                    nome_forn = @nome,
+                    cnpj_forn = @cnpj,
+                    razao_social_forn = @razao,
+                    data_criacao_forn = @data,
+                    telefone_forn = @telefone,
+                    email_forn = @email,
+                    estado_forn = @estado,
+                    cidade_forn = @cidade,
+                    bairro_forn = @bairro,
+                    rua_forn = @rua,
+                    numero_forn = @numero,
+                    cep_forn = @cep
+                WHERE id_forn = @id
+            ");
+
+            comando.Parameters.AddWithValue("@id", fornecedor.id);
+            comando.Parameters.AddWithValue("@nome", fornecedor.Nome);
+            comando.Parameters.AddWithValue("@cnpj", fornecedor.Cnpj);
+            comando.Parameters.AddWithValue("@razao", fornecedor.razaoSocial);
+            comando.Parameters.AddWithValue("@data", fornecedor.dataCriacao);
+            comando.Parameters.AddWithValue("@telefone", fornecedor.Telefone);
+            comando.Parameters.AddWithValue("@email", fornecedor.Email);
+            comando.Parameters.AddWithValue("@estado", fornecedor.estado);
+            comando.Parameters.AddWithValue("@cidade", fornecedor.cidade);
+            comando.Parameters.AddWithValue("@bairro", fornecedor.bairro);
+            comando.Parameters.AddWithValue("@rua", fornecedor.rua);
+            comando.Parameters.AddWithValue("@numero", fornecedor.numero);
+            comando.Parameters.AddWithValue("@cep", fornecedor.Cep);
+
+            comando.ExecuteNonQuery();
+        }
+
+        // 🔹 EXCLUIR
+        public void Excluir(int id)
+        {
+            var comando = _conexao.CreateCommand(
+                "DELETE FROM Fornecedores WHERE id_forn = @id"
+            );
+            comando.Parameters.AddWithValue("@id", id);
+            comando.ExecuteNonQuery();
         }
     }
 }

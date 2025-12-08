@@ -72,6 +72,13 @@ CREATE TABLE Estoque (
                     <input @bind-value="_novoEstoque!.Validade" type="text" class="form-control form-control-lg" placeholder="Validade" />
                 </div>
 
+                <div class="col-md-6 col-lg-4">
+                    <label class="form-label fw-semibold">Quantidade:</label>
+                    <input @bind-value="_novoEstoque!.Quantidade" type="text" class="form-control form-control-lg" placeholder="Quantidade" />
+                </div>
+
+
+
                 <div class="d-flex justify-content-center gap-3 mt-4">
                     <button type="button" class="btn btn-secondary px-4" @onclick="LimparFormulario">
                         Limpar

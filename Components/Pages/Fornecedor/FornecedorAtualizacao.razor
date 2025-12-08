@@ -1,0 +1,150 @@
+@page "/fornecedor/{Id:int}/editar"
+@rendermode InteractiveServer
+
+@using AppExemplo.Models;
+@inject FornecedorDAO fornecedorDao;
+@inject NavigationManager Navigation;
+
+<PageTitle>Fornecedor - Editar</PageTitle>
+
+<header class="topbar" style="display: flex; justify-content: space-between; align-items: center; background-color: #004b93; color: white; padding: 10px 20px;">
+    <div class="logo" style="display: flex; align-items: center; gap: 10px;">
+        <img src="https://img.icons8.com/color/48/000000/bird--v1.png" />
+        <span style="font-weight: bold; font-size: 1.2rem;">GESTÃO DE FORNECEDORES</span>
+    </div>
+
+    <button @onclick="VoltarInicio"
+            style="font-size: 24px; background: none; border: none; color: white; cursor: pointer;"
+            title="Voltar para início">🏠</button>
+</header>
+
+@if (erro != null)
+{
+    <div class="alert alert-danger">@erro</div>
+}
+
+<div class="container mt-4">
+    <EditForm Model="_fornecedor" OnSubmit="Salvar">
+        <div class="row g-4">
+
+            <div class="col-md-6 col-lg-4">
+                <label class="form-label fw-semibold">Nome</label>
+                <input @bind-value="_fornecedor.Nome" type="text" class="form-control form-control-lg" />
+            </div>
+
+            <div class="col-md-6 col-lg-4">
+                <label class="form-label fw-semibold">CNPJ</label>
+                <input @bind-value="_fornecedor.Cnpj" type="text" class="form-control form-control-lg" />
+            </div>
+
+            <div class="col-md-6 col-lg-4">
+                <label class="form-label fw-semibold">Razão Social</label>
+                <input @bind-value="_fornecedor.razaoSocial" type="text" class="form-control form-control-lg" />
+            </div>
+
+            <div class="col-md-4 col-lg-3">
+                <label class="form-label fw-semibold">Data de Criação</label>
+                <input @bind-value="_fornecedor.dataCriacao" type="text" class="form-control form-control-lg" />
+            </div>
+
+            <div class="col-md-4 col-lg-3">
+                <label class="form-label fw-semibold">Telefone</label>
+                <input @bind-value="_fornecedor.Telefone" type="text" class="form-control form-control-lg" />
+            </div>
+
+            <div class="col-md-4 col-lg-3">
+                <label class="form-label fw-semibold">Email</label>
+                <input @bind-value="_fornecedor.Email" type="email" class="form-control form-control-lg" />
+            </div>
+
+            <div class="col-md-4 col-lg-2">
+                <label class="form-label fw-semibold">CEP</label>
+                <input @bind-value="_fornecedor.Cep" type="text" class="form-control form-control-lg" />
+            </div>
+
+            <div class="col-md-4 col-lg-2">
+                <label class="form-label fw-semibold">Estado</label>
+                <input @bind-value="_fornecedor.estado" type="text" class="form-control form-control-lg" />
+            </div>
+
+            <div class="col-md-4 col-lg-3">
+                <label class="form-label fw-semibold">Cidade</label>
+                <input @bind-value="_fornecedor.cidade" type="text" class="form-control form-control-lg" />
+            </div>
+
+            <div class="col-md-4 col-lg-3">
+                <label class="form-label fw-semibold">Bairro</label>
+                <input @bind-value="_fornecedor.bairro" type="text" class="form-control form-control-lg" />
+            </div>
+
+            <div class="col-md-4 col-lg-3">
+                <label class="form-label fw-semibold">Rua</label>
+                <input @bind-value="_fornecedor.rua" type="text" class="form-control form-control-lg" />
+            </div>
+
+            <div class="col-md-2 col-lg-1">
+                <label class="form-label fw-semibold">Nº</label>
+                <input @bind-value="_fornecedor.numero" type="number" class="form-control form-control-lg" />
+            </div>
+
+            <div class="d-flex justify-content-center gap-3 mt-4">
+                <button type="button" class="btn btn-secondary px-4" @onclick="LimparFormulario">
+                    Limpar
+                </button>
+                <button type="submit" class="btn btn-primary px-4">
+                    Salvar
+                </button>
+            </div>
+
+        </div>
+    </EditForm>
+</div>
+
+@code {
+
+    private string? erro = null;
+
+    [Parameter]
+    public int Id { get; set; }
+
+    private Fornecedor _fornecedor = new();
+
+    protected override void OnInitialized()
+    {
+        _fornecedor = fornecedorDao.BuscarPorId(Id);
+
+        if (_fornecedor == null)
+        {
+            erro = "Fornecedor não encontrado";
+        }
+    }
+
+    private void Salvar()
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(_fornecedor.Nome))
+            {
+                throw new Exception("O campo nome é obrigatório.");
+            }
+
+            fornecedorDao.Atualizar(_fornecedor);
+            Navigation.NavigateTo("/fornecedores");
+        }
+        catch (Exception ex)
+        {
+            erro = ex.Message;
+        }
+    }
+
+    private void LimparFormulario()
+    {
+        _fornecedor = new Fornecedor();
+        erro = null;
+    }
+
+    private void VoltarInicio()
+    {
+        Navigation.NavigateTo("/");
+    }
+}

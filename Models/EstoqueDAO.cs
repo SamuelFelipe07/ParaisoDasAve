@@ -1,7 +1,4 @@
 using AppExemplo.Configs;
-using System;
-using System.Collections.Generic;
-using MySql.Data.MySqlClient;
 
 namespace AppExemplo.Models
 {
@@ -19,26 +16,24 @@ namespace AppExemplo.Models
         {
             try
             {
-                var comando = _conexao.CreateCommand(@"
-                    INSERT INTO Estoque (quantidade_est, validade_est, id_pro_fk, id_forn_fk)
-                    VALUES (@quantidade_est, @validade_est, @id_pro_fk, @id_forn_fk)
-                ");
+                var comando = _conexao.CreateCommand(
+                    "INSERT INTO Estoque VALUES (null, @_quantidade, @_validade, @_id_produto, @_id_fornecedor);"
+                );
 
-                comando.Parameters.AddWithValue("@quantidade_est", estoque.Quantidade);
-                comando.Parameters.AddWithValue("@validade_est", estoque.Validade);
-                comando.Parameters.AddWithValue("@id_pro_fk", estoque.Id_Produto);
-                comando.Parameters.AddWithValue("@id_forn_fk", estoque.Id_Fornecedor);
+                comando.Parameters.AddWithValue("@_quantidade", estoque.Quantidade);
+                comando.Parameters.AddWithValue("@_validade", estoque.Validade);
+                comando.Parameters.AddWithValue("@_id_produto", estoque.Id_Produto);
+                comando.Parameters.AddWithValue("@_id_fornecedor", estoque.Id_Fornecedor);
 
                 comando.ExecuteNonQuery();
             }
-            catch (Exception ex)
+            catch
             {
-                throw new Exception("Erro ao inserir estoque: " + ex.Message);
+                throw;
             }
         }
 
-        // ✅ LISTAR TODOS (com INNER JOIN)
-        public List<Estoque> Listar()
+        public List<Estoque> ListarTodos()
         {
             var lista = new List<Estoque>();
 
@@ -47,40 +42,71 @@ namespace AppExemplo.Models
                     e.id_est,
                     e.quantidade_est,
                     e.validade_est,
-                    e.id_pro_fk,
-                    e.id_forn_fk,
-                    p.nome_pro AS NomeProduto,
-                    p.marca_pro AS Marca,
-                    f.nome_forn AS NomeFornecedor
-                FROM Estoque e
-                INNER JOIN Produto p ON e.id_pro_fk = p.id_pro
-                INNER JOIN Fornecedores f ON e.id_forn_fk = f.id_forn
-                ORDER BY p.nome_pro
+                    p.id_pro AS produto_id,
+                    p.nome_pro AS produto_nome,
+                    f.id_forn AS fornecedor_id,
+                    f.nome_forn AS fornecedor_nome
+                FROM estoque e
+                INNER JOIN produto p ON p.id_pro = e.id_pro_fk
+                INNER JOIN fornecedores f ON f.id_forn = e.id_forn_fk;
             ");
 
-            using (var leitor = comando.ExecuteReader())
-            {
-                while (leitor.Read())
-                {
-                    var estoque = new Estoque
-                    {
-                        Id = leitor.GetInt32("id_est"),
-                        Quantidade = leitor.GetInt32("quantidade_est"),
-                        Validade = leitor.IsDBNull(leitor.GetOrdinal("validade_est"))
-                            ? string.Empty
-                            : leitor.GetString("validade_est"),
-                        Id_Produto = leitor.GetInt32("id_pro_fk"),
-                        Id_Fornecedor = leitor.GetInt32("id_forn_fk"),
-                        NomeProduto = leitor.GetString("NomeProduto"),
-                        NomeFornecedor = leitor.GetString("NomeFornecedor"),
-                        Marca = leitor.GetString("Marca")
-                    };
+            var leitor = comando.ExecuteReader();
 
-                    lista.Add(estoque);
-                }
+            while (leitor.Read())
+            {
+                var estoque = new Estoque
+                {
+                    Id = leitor.GetInt32("id_est"),
+                    Quantidade = leitor.GetInt32("quantidade_est"),
+                    Validade = leitor.IsDBNull(leitor.GetOrdinal("validade_est"))
+                        ? ""
+                        : leitor.GetString("validade_est"),
+
+                    Id_Produto = leitor.GetInt32("produto_id"),
+                    NomeProduto = leitor.GetString("produto_nome"),
+
+                    Id_Fornecedor = leitor.GetInt32("fornecedor_id"),
+                    NomeFornecedor = leitor.GetString("fornecedor_nome")
+                };
+
+                lista.Add(estoque);
             }
 
             return lista;
+        }
+
+
+        // ✅ BUSCAR POR ID
+        public Estoque? BuscarPorId(int id)
+        {
+            var comando = _conexao.CreateCommand(
+                "SELECT * FROM Estoque WHERE id_est = @id;"
+            );
+
+            comando.Parameters.AddWithValue("@id", id);
+
+            var leitor = comando.ExecuteReader();
+
+            if (leitor.Read())
+            {
+                var estoque = new Estoque
+                {
+                    Id = leitor.GetInt32("id_est"),
+                    Quantidade = leitor.GetInt32("quantidade_est"),
+                    Validade = leitor.IsDBNull(leitor.GetOrdinal("validade_est"))
+                        ? ""
+                        : leitor.GetString("validade_est"),
+                    Id_Produto = leitor.GetInt32("id_pro_fk"),
+                    Id_Fornecedor = leitor.GetInt32("id_forn_fk")
+                };
+
+                return estoque;
+            }
+            else
+            {
+                return null;
+            }
         }
 
         // ✅ ATUALIZAR
@@ -88,27 +114,21 @@ namespace AppExemplo.Models
         {
             try
             {
-                var comando = _conexao.CreateCommand(@"
-                    UPDATE Estoque 
-                    SET 
-                        quantidade_est = @quantidade_est,
-                        validade_est = @validade_est,
-                        id_pro_fk = @id_pro_fk,
-                        id_forn_fk = @id_forn_fk
-                    WHERE id_est = @id_est
-                ");
+                var comando = _conexao.CreateCommand(
+                    "UPDATE Estoque SET quantidade_est = @_quantidade, validade_est = @_validade, id_pro_fk = @_id_produto, id_forn_fk = @_id_fornecedor WHERE id_est = @_id;"
+                );
 
-                comando.Parameters.AddWithValue("@id_est", estoque.Id);
-                comando.Parameters.AddWithValue("@quantidade_est", estoque.Quantidade);
-                comando.Parameters.AddWithValue("@validade_est", estoque.Validade);
-                comando.Parameters.AddWithValue("@id_pro_fk", estoque.Id_Produto);
-                comando.Parameters.AddWithValue("@id_forn_fk", estoque.Id_Fornecedor);
+                comando.Parameters.AddWithValue("@_quantidade", estoque.Quantidade);
+                comando.Parameters.AddWithValue("@_validade", estoque.Validade);
+                comando.Parameters.AddWithValue("@_id_produto", estoque.Id_Produto);
+                comando.Parameters.AddWithValue("@_id_fornecedor", estoque.Id_Fornecedor);
+                comando.Parameters.AddWithValue("@_id", estoque.Id);
 
                 comando.ExecuteNonQuery();
             }
-            catch (Exception ex)
+            catch
             {
-                throw new Exception("Erro ao atualizar estoque: " + ex.Message);
+                throw;
             }
         }
 
@@ -117,13 +137,16 @@ namespace AppExemplo.Models
         {
             try
             {
-                var comando = _conexao.CreateCommand("DELETE FROM Estoque WHERE id_est = @id_est");
-                comando.Parameters.AddWithValue("@id_est", id);
+                var comando = _conexao.CreateCommand(
+                    "DELETE FROM Estoque WHERE id_est = @id;"
+                );
+
+                comando.Parameters.AddWithValue("@id", id);
                 comando.ExecuteNonQuery();
             }
-            catch (Exception ex)
+            catch
             {
-                throw new Exception("Erro ao excluir estoque: " + ex.Message);
+                throw;
             }
         }
     }

@@ -1,0 +1,122 @@
+@page "/estoque/{Id:int}/editar"
+@rendermode InteractiveServer
+
+@using AppExemplo.Models;
+@inject EstoqueDAO estoqueDao;
+@inject NavigationManager Navigation;
+
+<PageTitle>Estoque - Editar</PageTitle>
+
+<header class="topbar" style="display: flex; justify-content: space-between; align-items: center; background-color: #004b93; color: white; padding: 10px 20px;">
+    <div class="logo" style="display: flex; align-items: center; gap: 10px;">
+        <img src="https://img.icons8.com/color/48/000000/box.png" alt="Logo" />
+        <span style="font-weight: bold; font-size: 1.2rem;">GESTÃO DE ESTOQUE</span>
+    </div>
+
+    <button @onclick="VoltarInicio"
+            style="font-size: 24px; background: none; border: none; color: white; cursor: pointer;"
+            title="Voltar para início">🏠</button>
+</header>
+
+@if (erro != null)
+{
+    <div class="alert alert-danger">@erro</div>
+}
+
+<div class="container mt-4">
+    <EditForm Model="_estoque" OnSubmit="Salvar">
+        <div class="row g-4">
+
+            <div class="col-md-4">
+                <label class="form-label fw-semibold">Quantidade</label>
+                <input @bind-value="_estoque!.Quantidade" type="number"
+                       class="form-control form-control-lg"
+                       placeholder="Quantidade em estoque" />
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label fw-semibold">Validade</label>
+                <input @bind-value="_estoque!.Validade" type="text"
+                       class="form-control form-control-lg"
+                       placeholder="Validade" />
+            </div>
+
+            <div class="col-md-2">
+                <label class="form-label fw-semibold">ID Produto</label>
+                <input @bind-value="_estoque!.Id_Produto" type="number"
+                       class="form-control form-control-lg"
+                       placeholder="Produto" />
+            </div>
+
+            <div class="col-md-2">
+                <label class="form-label fw-semibold">ID Fornecedor</label>
+                <input @bind-value="_estoque!.Id_Fornecedor" type="number"
+                       class="form-control form-control-lg"
+                       placeholder="Fornecedor" />
+            </div>
+
+            <div class="d-flex justify-content-center gap-3 mt-4">
+                <button type="button" class="btn btn-secondary px-4" @onclick="LimparFormulario">
+                    Limpar
+                </button>
+                <button type="submit" class="btn btn-primary px-4">
+                    Salvar
+                </button>
+            </div>
+        </div>
+    </EditForm>
+</div>
+
+@code
+{
+    private string? erro = null;
+
+    [Parameter]
+    public int Id { get; set; }
+
+    private Estoque _estoque = new();
+
+    protected override void OnInitialized()
+    {
+        var estoque = estoqueDao.BuscarPorId(Id);
+
+        if (estoque != null)
+        {
+            _estoque = estoque;
+        }
+        else
+        {
+            erro = "Estoque não encontrado.";
+        }
+    }
+
+    private void Salvar()
+    {
+        try
+        {
+            if (_estoque.Quantidade <= 0)
+            {
+                throw new Exception("A quantidade deve ser maior que zero.");
+            }
+
+            estoqueDao.Atualizar(_estoque);
+            Navigation.NavigateTo("/estoque");
+        }
+        catch (Exception ex)
+        {
+            erro = ex.Message;
+        }
+    }
+
+    private void LimparFormulario()
+    {
+        _estoque = new Estoque();
+        erro = null;
+        StateHasChanged();
+    }
+
+    private void VoltarInicio()
+    {
+        Navigation.NavigateTo("/");
+    }
+}

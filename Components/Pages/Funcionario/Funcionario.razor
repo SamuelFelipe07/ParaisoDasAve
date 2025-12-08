@@ -40,6 +40,14 @@
                     <td>@funcionario.Telefone</td>
                     <td>@funcionario.Email</td>
                     <td>@funcionario.Sexo</td>
+                    <td>
+                        <a href="/funcionarios/@funcionario.Id/editar" class="btn btn-sm btn-primary mr-2">
+                            <i class="fas fa-edit"></i> Atualizar
+                        </a>
+                        <a href="/funcionarios/@funcionario.Id/excluir" class="btn btn-sm btn-danger">
+                            <i class="fas fa-trash"></i> Excluir
+                        </a>
+                    </td>
                 </tr>
                 contador++;
             }
